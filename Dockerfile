@@ -23,4 +23,9 @@ COPY --from=build /workspace/target/*.jar app.jar
 USER app
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "/app/app.jar"]
+# Heap = 40% do limite de memória do container (mem_limit no docker-compose.yml).
+# Os outros 60% ficam para metaspace, code cache, threads e buffers nativos.
+# ExitOnOutOfMemoryError faz o processo sair em vez de ficar travado, e o
+# restart: unless-stopped do Compose sobe o serviço de novo.
+ENV JAVA_MAX_RAM_PERCENTAGE=40
+ENTRYPOINT ["sh", "-c", "exec java -XX:MaxRAMPercentage=${JAVA_MAX_RAM_PERCENTAGE} -XX:+ExitOnOutOfMemoryError -jar /app/app.jar \"$@\"", "--"]
