@@ -31,6 +31,11 @@ management:
       exposure:
         include: health,info
 
+services:
+  tenant:
+    # Usado para validar o link da loja antes de gravar em customer_stores.
+    url: ${SERVICES_TENANT_URL:http://localhost:8082}
+
 app:
   seed:
     demo-data: false
